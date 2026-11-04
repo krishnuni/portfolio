@@ -1,0 +1,128 @@
+[
+  {
+    "id": "hush",
+    "number": "01",
+    "name": "Hush",
+    "category": "Product engineering",
+    "tagline": "For the written word. And the spoken one.",
+    "summary": "An EPUB and PDF reading application with on-device neural narration, a choice of voices, and a place that stays saved.",
+    "image": "hush-library.webp",
+    "imageAlt": "Hush's actual library interface with the current read and three original sample books",
+    "live": "https://krishnuni.github.io/hush/",
+    "repo": "https://github.com/krishnuni/hush",
+    "evidence": "https://github.com/krishnuni/hush/blob/main/docs/STATUS.md",
+    "stack": ["TypeScript", "React", "WebAssembly", "IndexedDB"],
+    "intro": "I wanted a reading application where the interface gave the book room. Hush combines a publication-inspired library with a quiet reader, persistent places, and narration that runs on the device.",
+    "contribution": "The application brings together EPUB and PDF rendering, import validation, source-aligned reading positions, typography controls, local persistence, a browser inference worker and a narration controller. Established document engines handle the underlying publication formats.",
+    "decisions": [
+      {
+        "title": "Keep the library on the device.",
+        "text": "Books, bookmarks and reading places live in IndexedDB. The browser can provide the core reading experience without accounts or uploaded documents. The trade-off is deliberate: storage can be evicted, and there is no cross-device sync."
+      },
+      {
+        "title": "A listening position is its own state.",
+        "text": "Reading navigation and narration have separate source anchors. Playback follows actual media events rather than an estimated timer, and resuming an exact offset depends on recovering the same cached audio clip."
+      },
+      {
+        "title": "Make voice setup an explicit choice.",
+        "text": "The neural model is optional and downloaded only when enabled. A dedicated WebAssembly worker keeps inference off the interface thread. Additional voices reuse the engine and fetch their own small profile."
+      }
+    ],
+    "architecture": [
+      "React library & reader",
+      "EPUB.js / PDF.js",
+      "IndexedDB positions",
+      "Kokoro WASM worker",
+      "Audio controller & cache"
+    ],
+    "verification": "The published verification record dated 3 November 2026 reports 37 unit tests and 34 browser cases across Chromium, WebKit and offline flows. The real-inference checks exercise the bundled model, media output and saved voice choices. The record includes the exact release and workflow links.",
+    "limits": "English narration; no DRM removal, OCR or cloud sync. Physical iPhone and Android audio output, long sessions and background playback need device-level checks. Automated WebKit is distinct from physical Safari/iOS.",
+    "takeaway": "A good reading interface depends on the details beneath it: document positions, storage ownership, audio state and recovery when a browser changes the rules.",
+    "secondaryImage": "hush-mobile.webp",
+    "secondaryAlt": "Actual phone reader in Hush with reachable reading controls"
+  },
+  {
+    "id": "gateway",
+    "number": "02",
+    "name": "Gateway",
+    "category": "Scientific computing",
+    "tagline": "The geometry of gravitational transport.",
+    "summary": "A Rust numerical engine and a browser laboratory for exploring the Solar System, periodic orbits and invariant manifolds.",
+    "image": "gateway.webp",
+    "imageAlt": "Actual Gateway viewport showing a computed Sun-Jupiter manifold family",
+    "live": "https://krishnuni.github.io/gateway/",
+    "repo": "https://github.com/krishnuni/gateway",
+    "evidence": "https://github.com/krishnuni/gateway/blob/main/docs/VALIDATION.md",
+    "stack": ["Rust", "WebAssembly", "Three.js", "Numerical methods"],
+    "intro": "Gateway grew from an interest in the structures that organise motion in a gravitational system. The visualisation is a way into the computation: choose a system, change a parameter and inspect the resulting geometry.",
+    "contribution": "The original Rust engine contains adaptive integration, periodic-orbit shooting, continuation, variational dynamics and stable/unstable manifold seeds. It compiles to WebAssembly, runs behind a cancellable worker and supplies owned samples to a separate rendering layer.",
+    "decisions": [
+      {
+        "title": "Define the physical model precisely.",
+        "text": "The overview uses approximate Keplerian orbital elements. Local experiments use the planar circular restricted three-body problem. Keeping those models separate makes the geometry interpretable without implying a full Solar System simulation."
+      },
+      {
+        "title": "Keep numerical authority out of the renderer.",
+        "text": "The engine works in double precision. Worker scheduling owns cancellation and data transfer. The scene converts and rebases the samples for drawing, so an attractive picture is not also the source of the calculation."
+      },
+      {
+        "title": "Check against an independent implementation.",
+        "text": "Recorded fixtures are compared with independently written SciPy DOP853 calculations. Closure, Jacobi drift and stability diagnostics provide more useful evidence than a smooth-looking orbit alone."
+      }
+    ],
+    "architecture": [
+      "React experiment controls",
+      "Rust numerical engine",
+      "WASM worker ownership",
+      "Owned f64 trajectory samples",
+      "Three.js scene & diagnostics"
+    ],
+    "verification": "The 22 October 2026 validation record documents four Earth-Moon and Sun-Jupiter fixtures compared against an independent SciPy implementation. The recorded one-period state differences are below 6 × 10⁻¹² for those fixtures. The report states the tolerances, time windows, diagnostics and limitations.",
+    "limits": "The local laboratory uses an idealised planar circular three-body model. It does not implement halo orbits, a coupled eight-planet N-body model, FTLE fields or optimised mission transfers. Long chaotic trajectories can diverge even while energy remains accurate. Hardware-GPU and physical-phone performance are not certified by the recorded software-rendering sample.",
+    "takeaway": "Scientific visualisation is most useful when the assumptions and numerical evidence are as inspectable as the image.",
+    "secondaryImage": null,
+    "secondaryAlt": null
+  },
+  {
+    "id": "search-atlas",
+    "number": "03",
+    "name": "Search Atlas",
+    "category": "Algorithms & visualisation",
+    "tagline": "Make the next decision visible.",
+    "summary": "Build a pathfinding problem, compare algorithms on the same terrain, then step backwards through the decisions that produced a route.",
+    "image": "atlas.webp",
+    "imageAlt": "Actual Search Atlas laboratory with editable terrain, algorithm controls and search results",
+    "live": "https://krishnuni.github.io/search-atlas/",
+    "repo": "https://github.com/krishnuni/search-atlas",
+    "evidence": "https://github.com/krishnuni/search-atlas/blob/main/docs/VERIFICATION.md",
+    "stack": ["TypeScript", "PixiJS", "Web Workers", "Search algorithms"],
+    "intro": "A route is only the final answer. Search Atlas makes the decisions leading to that answer visible: frontier order, parent links, terrain costs and the trade-off between different search policies.",
+    "contribution": "The application connects four original search implementations to an editable PixiJS grid, a worker boundary and a recorded playback history. It includes weighted terrain, deterministic scenarios, comparisons, rewind, checkpoints and scenario import/export.",
+    "decisions": [
+      {
+        "title": "Separate computation from playback.",
+        "text": "The pure search engine knows nothing about the interface. A run produces recorded transitions, and playback projects them into the display. That makes rewind and inspection actual history rather than an approximation of a running animation."
+      },
+      {
+        "title": "Compare the same problem.",
+        "text": "Both panes use the same immutable scenario and linked camera state. Editing invalidates both runs. Costs and objectives are explicit: BFS minimises moves, while Dijkstra and the supported A* heuristics minimise weighted path cost."
+      },
+      {
+        "title": "Give metrics a precise meaning.",
+        "text": "Search time, replay storage and algorithm buffers are recorded separately. Benchmarks state the fixture and measurement method. A faster animation is not treated as a faster algorithm."
+      }
+    ],
+    "architecture": [
+      "Scenario & edit commands",
+      "Pure search engine in worker",
+      "Packed transitions & checkpoints",
+      "Deterministic playback projection",
+      "PixiJS views & semantic controls"
+    ],
+    "verification": "The 22 October 2026 verification record includes 1,000 seeded tiny grids checked against an independently implemented Bellman-Ford reference, heuristic checks, replay round trips, nine browser workflow groups and scoped performance samples. Local results and CI configuration are distinguished in the record.",
+    "limits": "The released laboratory supports A*, Dijkstra, BFS and greedy best-first on grids up to 128 × 128. Physical-phone, Safari/iOS, Firefox and real screen-reader validation remain unverified in the published record. Buffer payload measurements exclude browser, GPU and JavaScript object overhead.",
+    "takeaway": "A visualisation earns its place when it reveals an algorithm's behaviour accurately enough to question it.",
+    "secondaryImage": "atlas-comparison.webp",
+    "secondaryAlt": "Actual weighted comparison between search algorithms in Search Atlas"
+  }
+]
