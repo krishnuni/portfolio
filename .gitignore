@@ -1,0 +1,14 @@
+node_modules/
+dist/
+index.html
+work/
+resume/
+404.html
+.DS_Store
+.openai/
+*.log
+tmp/
+
+__qa__/
+playwright-report/
+test-results/
