@@ -334,6 +334,7 @@ svg path {
 .hero {
   position: relative;
   isolation: isolate;
+  overflow: clip;
   min-height: 795px;
   height: min(835px, calc(100svh - 84px));
   padding-top: clamp(62px, 7vw, 108px);
